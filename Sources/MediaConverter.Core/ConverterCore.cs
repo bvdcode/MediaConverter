@@ -236,7 +236,7 @@ namespace MediaConverter.Core
             totalElapsed += elapsed;
             long oldSizeMb = inputFile.Length / 1024 / 1024;
             long newSizeMb = newSize / 1024 / 1024;
-            int compressionRate = (int)(compressedBytes * 100 / inputFile.Length);
+            int compressionRate = (int)(compressed * 100 / inputFile.Length);
             Log("Compressed file: {0}, {1}Mb => {2}Mb ({3}%), elapsed: {4}", inputFile.Name, oldSizeMb, newSizeMb, compressionRate, elapsed);
             SetAsConvertedByMetadata(inputFile);
         }
@@ -334,11 +334,11 @@ namespace MediaConverter.Core
         private bool HasValidFooter(FileInfo file, string encoderName)
         {
             using var fs = file.OpenRead();
-            fs.Seek(0 - encoderName.Length, SeekOrigin.End);
-            byte[] footerBytes = new byte[encoderName.Length];
+            fs.Seek(0 - encoderName.Length - byte.MaxValue, SeekOrigin.End);
+            byte[] footerBytes = new byte[encoderName.Length + byte.MaxValue];
             fs.Read(footerBytes, 0, footerBytes.Length);
             string footer = Encoding.ASCII.GetString(footerBytes);
-            return footer == encoderName;
+            return footer.Contains(encoderName);
         }
 
         public void ResetCache()
@@ -383,6 +383,10 @@ namespace MediaConverter.Core
             var snippet = await FFmpeg.Conversions.FromSnippet.Convert(inputFile.FullName, temp.FullName);
             snippet.OnProgress += Snippet_OnProgress;
             IConversionResult result = await snippet.Start(token);
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
             Move(temp, inputFile);
             long newSize = temp.Length;
             OnItemProcessed(inputFile, sw.Elapsed, newSize);
