@@ -29,6 +29,8 @@ namespace MediaConverter.Core
             public const string Mpeg4 = "m4a";
             public const string FreeLossless = "flac";
             public const string Waveform = "wav";
+            public const string Ogging = "ogg";
+
             public static IEnumerable<string> AsEnumerable()
             {
                 return new[]

@@ -2,7 +2,7 @@
   "profiles": {
     "MediaConverter.ConsoleClient": {
       "commandName": "Project",
-      "commandLineArgs": "-f mp4"
+      "commandLineArgs": "-f mp4 -i E:\\Cloud\\NextCloud\\Lessons\\ielts -c -m"
     }
   }
 }

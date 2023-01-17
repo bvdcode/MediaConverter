@@ -19,12 +19,19 @@ namespace MediaConverter.ConsoleClient
                 options.InputDirectory = Environment.CurrentDirectory;
             }
             var cc = new ConverterCore(options.InputDirectory, options.OutputFormat!);
+            cc.SetMarkBadAsCompleted(options.MarkBadAsCompleted);
+            if (options.ResetCache)
+            {
+                cc.ResetCache();
+            }
             cc.LogOutput += (sender, e) => Console.WriteLine(e);
             if (options.CalculateCount)
             {
                 await cc.FindInputFilesAsync();
             }
-            await cc.ConvertFilesAsync(options.Threads);
+            CancellationTokenSource cancellationTokenSource = new();
+            Console.CancelKeyPress += (sender, args) => { cancellationTokenSource.Cancel(); Thread.Sleep(3000); };
+            await cc.ConvertFilesAsync(cancellationTokenSource.Token);
         }
 
         public class Options
@@ -38,8 +45,11 @@ namespace MediaConverter.ConsoleClient
             [Option('f', "format", Required = true, HelpText = "Calculate input files count.")]
             public string? OutputFormat { get; set; }
 
-            [Option('t', "threads", Required = false, Min = 1, HelpText = "Threads count, by default - processor threads count.")]
-            public int Threads { get; set; }
+            [Option('r', "reset", Required = false, HelpText = "Flush compressed file hashes from cache.")]
+            public bool ResetCache { get; set; }
+
+            [Option('m', "mark-bad-as-completed", Required = false, HelpText = "Mark bad files as completed.")]
+            public bool MarkBadAsCompleted { get; set; }
         }
     }
 }
