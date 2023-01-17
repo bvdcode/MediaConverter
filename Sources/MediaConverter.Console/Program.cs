@@ -25,13 +25,16 @@ namespace MediaConverter.ConsoleClient
                 cc.ResetCache();
             }
             cc.LogOutput += (sender, e) => Console.WriteLine(e);
-            if (options.CalculateCount)
+            if (options.CalculateCount || options.ScanOnly)
             {
                 await cc.FindInputFilesAsync();
             }
-            CancellationTokenSource cancellationTokenSource = new();
-            Console.CancelKeyPress += (sender, args) => { cancellationTokenSource.Cancel(); Thread.Sleep(3000); };
-            await cc.ConvertFilesAsync(cancellationTokenSource.Token);
+            if (!options.ScanOnly)
+            {
+                CancellationTokenSource cancellationTokenSource = new();
+                Console.CancelKeyPress += (sender, args) => { cancellationTokenSource.Cancel(); Thread.Sleep(3000); };
+                await cc.ConvertFilesAsync(cancellationTokenSource.Token);
+            }
         }
 
         public class Options
@@ -50,6 +53,9 @@ namespace MediaConverter.ConsoleClient
 
             [Option('m', "mark-bad-as-completed", Required = false, HelpText = "Mark bad files as completed.")]
             public bool MarkBadAsCompleted { get; set; }
+
+            [Option('s', "scan-only", Required = false, HelpText = "Scan only (no convert).")]
+            public bool ScanOnly { get; set; }
         }
     }
 }
