@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MediaConverter.ConsoleClient": {
+      "commandName": "Project",
+      "commandLineArgs": "-f mp4"
+    }
+  }
+}

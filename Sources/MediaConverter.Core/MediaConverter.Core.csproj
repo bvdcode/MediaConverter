@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Xabe.FFmpeg" Version="5.2.3" />
+  </ItemGroup>
+
 </Project>
