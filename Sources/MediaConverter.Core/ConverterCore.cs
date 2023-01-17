@@ -168,7 +168,7 @@ namespace MediaConverter.Core
             return result;
         }
 
-        public async Task ConvertFilesAsync(CancellationToken token = default)
+        public async Task ConvertFilesAsync(int limit = -1, CancellationToken token = default)
         {
             string currentDirectory = string.Empty;
             foreach (var inputFile in GetInputFiles())
@@ -185,6 +185,13 @@ namespace MediaConverter.Core
                 catch (Exception ex)
                 {
                     Log(ex, "Error when file converting");
+                }
+                if (limit > 0)
+                {
+                    if (processedCounter >= limit)
+                    {
+                        break;
+                    }
                 }
             }
             OnWorkCompleted();

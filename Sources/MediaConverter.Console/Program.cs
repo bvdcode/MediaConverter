@@ -56,6 +56,10 @@ namespace MediaConverter.ConsoleClient
 
             [Option('s', "scan-only", Required = false, HelpText = "Scan only (no convert).")]
             public bool ScanOnly { get; set; }
+
+
+            [Option('l', "limit", Required = false, HelpText = "Limit files for converting.")]
+            public int Limit { get; set; }
         }
     }
 }
