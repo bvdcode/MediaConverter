@@ -170,6 +170,7 @@ namespace MediaConverter.Core
 
         public async Task ConvertFilesAsync(int limit = -1, CancellationToken token = default)
         {
+            DeleteTempFiles();
             string currentDirectory = string.Empty;
             foreach (var inputFile in GetInputFiles())
             {
@@ -193,8 +194,27 @@ namespace MediaConverter.Core
                         break;
                     }
                 }
+                if (token != default && token.IsCancellationRequested)
+                {
+                    break;
+                }
             }
             OnWorkCompleted();
+        }
+
+        private void DeleteTempFiles()
+        {
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder);
+            DirectoryInfo directoryInfo = new DirectoryInfo(path);
+            var files = directoryInfo.GetFiles();
+            foreach (var file in files)
+            {
+                if (file.Name.ToLower().Contains(convertedHashesFile))
+                {
+                    continue;
+                }
+                File.Delete(file.FullName);
+            }
         }
 
         public async Task FindInputFilesAsync()

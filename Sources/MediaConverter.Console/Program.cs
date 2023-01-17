@@ -33,7 +33,7 @@ namespace MediaConverter.ConsoleClient
             {
                 CancellationTokenSource cancellationTokenSource = new();
                 Console.CancelKeyPress += (sender, args) => { cancellationTokenSource.Cancel(); Thread.Sleep(3000); };
-                await cc.ConvertFilesAsync(cancellationTokenSource.Token);
+                await cc.ConvertFilesAsync(options.Limit, cancellationTokenSource.Token);
             }
         }
 
