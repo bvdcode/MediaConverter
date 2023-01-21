@@ -3,9 +3,13 @@
 FFMpeg wrapper for batch-converting of media files
 
 Supported formats:
+
   Video:
+  
     mp4, mkv, avi, flv, mov 
+    
   Audio:
+  
     mp3, m4a, flac, wav, ogg
 
 Usage:
