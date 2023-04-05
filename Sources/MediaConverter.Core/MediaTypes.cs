@@ -35,7 +35,7 @@ namespace MediaConverter.Core
             {
                 return new[]
                 {
-                     Mpeg3, Mpeg4, FreeLossless, Waveform
+                     Mpeg3, Mpeg4, FreeLossless, Waveform, Ogging
                 };
             }
         }        
