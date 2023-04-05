@@ -47,11 +47,23 @@ namespace MediaConverter.Core
             {
                 throw new DirectoryNotFoundException(inputDirectory);
             }
+            CheckLibraries();
             this.outputFormat = outputFormat.Replace(".", string.Empty).Trim();
             inputCache = new List<FileInfo>();
             inputFormats = DetectInputFormats();
             targetCodec = SetupTargetCodec();
             streamType = SetupStreamType();
+        }
+
+        private void CheckLibraries()
+        {
+            bool ffmpegExists = File.Exists("ffmpeg.exe");
+            bool ffprobeExists = File.Exists("ffprobe.exe");
+            if (!ffmpegExists || !ffprobeExists)
+            {
+                return;
+            }
+            FFmpeg.SetExecutablesPath(Environment.CurrentDirectory);
         }
 
         private StreamType SetupStreamType()
@@ -78,6 +90,8 @@ namespace MediaConverter.Core
                     MediaTypes.Video.AudioVideoInterleave => VideoCodec.mpeg4.ToString(),
                     MediaTypes.Video.FlashVideo => VideoCodec.flv1.ToString(),
                     MediaTypes.Video.QuickTime => VideoCodec.h264.ToString(),
+                    MediaTypes.Video.WindowsMedia => VideoCodec.wmv3.ToString(),
+                    MediaTypes.Video.WebM => VideoCodec.vp9.ToString(),
                     _ => throw new NotSupportedException("Output media type is not supported: " + outputFormat)
                 };
             }
@@ -206,6 +220,10 @@ namespace MediaConverter.Core
         {
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder);
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
+            if (!directoryInfo.Exists)
+            {
+                return;
+            }
             var files = directoryInfo.GetFiles();
             foreach (var file in files)
             {
@@ -320,7 +338,7 @@ namespace MediaConverter.Core
                 return _convertedHashes;
             }
             var lines = File.ReadAllLines(filePath);
-            foreach ( string line in lines )
+            foreach (string line in lines)
             {
                 if (_convertedHashes.Contains(line))
                 {
@@ -354,7 +372,7 @@ namespace MediaConverter.Core
 
         private FileInfo GetTempFile(string outputFormat)
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder, 
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder,
                 Guid.NewGuid().ToString() + '.' + outputFormat);
             return new FileInfo(path);
         }
