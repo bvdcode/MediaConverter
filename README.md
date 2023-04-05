@@ -18,11 +18,11 @@ Usage:
 
   -i, --input                    - Input directory path, if not specified - using current directory.
 
-  -f, --format                   - Required. Calculate input files count.
+  -f, --format                   - Required. Output format. Input files will be found by this type (Audio or Video).
 
-  -r, --reset                    - Flush compressed file hashes from cache.
+  -r, --reset                    - Flush compressed file hashes (history) from cache.
 
-  -m, --mark-bad-as-completed    - Mark bad files as completed.
+  -m, --mark-bad-as-completed    - Mark bad files or non-convertable files as completed.
 
   -s, --scan-only                - Scan only (no convert).
 
@@ -33,4 +33,4 @@ Usage:
   --version                      - Display version information.
   
 Example:
-  MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and encode to mp4.
+  MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and convert 10 files to mp4.
