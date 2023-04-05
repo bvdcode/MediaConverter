@@ -1,6 +1,7 @@
 # MediaConverter
 
-FFMpeg wrapper for batch-converting of media files
+FFMpeg wrapper for batch-converting of media files.
+Place FFMPEG to executable folder or to any system $PATH folder.
 
 Supported formats:
 
