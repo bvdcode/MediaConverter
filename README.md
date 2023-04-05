@@ -7,7 +7,7 @@ Supported formats:
 
   Video:
   
-    mp4, mkv, avi, flv, mov 
+    mp4, mkv, avi, flv, mov, wmv, webm
     
   Audio:
   
