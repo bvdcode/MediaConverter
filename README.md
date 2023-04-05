@@ -34,4 +34,4 @@ Usage:
   --version                      - Display version information.
   
 Example:
-  MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and convert 10 files to mp4.
+    MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and convert 10 files to mp4.
