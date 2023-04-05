@@ -3,9 +3,9 @@ using MediaConverter.Core;
 
 namespace MediaConverter.ConsoleClient
 {
-    internal partial class Program
+    public class Program
     {
-        static async Task Main(params string[] args)
+        public static async Task Main(params string[] args)
         {
             await Parser.Default
                 .ParseArguments<Options>(args)
