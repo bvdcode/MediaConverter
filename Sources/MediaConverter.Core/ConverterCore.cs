@@ -26,7 +26,6 @@ namespace MediaConverter.Core
 
         #region Constants
 
-        private const string currentEncoder = "Lavf58.45.100";
         private const string convertedHashesFolder = "MediaConverter";
         private const string convertedHashesFile = "media_converter_hashes.txt";
 
@@ -184,7 +183,7 @@ namespace MediaConverter.Core
                 File.Delete(file.FullName);
             }
         }
-        
+
         private void SetAsConvertedByMetadata(FileInfo file)
         {
             string hash = SHA512(file.Name + file.Length + file.LastWriteTimeUtc);
@@ -203,7 +202,7 @@ namespace MediaConverter.Core
             string hash = SHA512(file.Name + file.Length + file.LastWriteTimeUtc);
             return convertedHashes.Contains(hash);
         }
-        
+
         private bool IsConverted(FileInfo file)
         {
             if (IsConvertedByMetadata(file))
@@ -217,16 +216,7 @@ namespace MediaConverter.Core
                     .Where(x => x.StreamType == streamType)
                     .FirstOrDefault(x => x.Codec == targetCodec);
 
-                if (codec == null)
-                {
-                    return false;
-                }
-                bool hasValidFooter = FileHelpers.HasValidFooter(file, currentEncoder);
-                if (hasValidFooter)
-                {
-                    SetAsConvertedByMetadata(file);
-                }
-                return hasValidFooter;
+                return codec != null;
             }
             catch (Exception ex)
             {
@@ -263,7 +253,7 @@ namespace MediaConverter.Core
             }
             return _convertedHashes;
         }
-        
+
         private IEnumerable<string> DetectInputFormats()
         {
             if (MediaTypes.Video.AsEnumerable().Any(x => x == outputFormat.ToLower()))
