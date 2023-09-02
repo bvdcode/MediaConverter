@@ -1,13 +1,14 @@
 # MediaConverter
 
 FFMpeg wrapper for batch-converting of media files.
+Converted files will be hashed by metadata and will not be converted in next run. Use -r for flush hash-cache.
 Place FFMPEG to executable folder or to any system $PATH folder.
 
 Supported formats:
 
   Video:
   
-    mp4, mkv, avi, flv, mov 
+    mp4, mkv, avi, flv, mov, wmv, webm
     
   Audio:
   
@@ -34,4 +35,5 @@ Usage:
   --version                      - Display version information.
   
 Example:
-  MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and convert 10 files to mp4.
+  
+    MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and convert 10 files to mp4.
