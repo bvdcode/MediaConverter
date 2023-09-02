@@ -18,7 +18,7 @@ namespace MediaConverter.ConsoleClient
             {
                 options.InputDirectory = Environment.CurrentDirectory;
             }
-            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat!);
+            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat!, options.IgnoreErrors);
             cc.SetMarkBadAsCompleted(options.MarkBadAsCompleted);
             if (options.ResetCache)
             {

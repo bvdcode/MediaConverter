@@ -12,6 +12,7 @@ namespace MediaConverter.Core
 {
     public sealed class ConverterCore
     {
+        private readonly bool ignoreErrors;
         private readonly string targetCodec;
         private readonly string outputFormat;
         private bool markBadAsCompleted = false;
@@ -41,7 +42,7 @@ namespace MediaConverter.Core
 
         #endregion
 
-        public ConverterCore(string inputDirectory, string outputFormat)
+        public ConverterCore(string inputDirectory, string outputFormat, bool ignoreErrors)
         {
             if (string.IsNullOrWhiteSpace(inputDirectory))
             {
@@ -62,6 +63,7 @@ namespace MediaConverter.Core
             inputFormats = DetectInputFormats();
             targetCodec = SetupTargetCodec();
             streamType = SetupStreamType();
+            this.ignoreErrors = ignoreErrors;
         }
 
         public void SetMarkBadAsCompleted(bool markBadAsCompleted)
@@ -323,6 +325,10 @@ namespace MediaConverter.Core
             FileInfo temp = FileHelpers.GetTempFile(outputFormat, convertedHashesFolder);
             var snippet = await Xabe.FFmpeg.FFmpeg.Conversions.FromSnippet.Convert(inputFile.FullName, temp.FullName);
             snippet.OnProgress += Snippet_OnProgress;
+            if (ignoreErrors)
+            {
+                snippet.AddParameter("-err_detect ignore_err", Xabe.FFmpeg.ParameterPosition.PreInput);
+            }
             Xabe.FFmpeg.IConversionResult result = await snippet.Start(token);
             if (token.IsCancellationRequested)
             {
