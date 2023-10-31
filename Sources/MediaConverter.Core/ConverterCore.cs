@@ -12,6 +12,9 @@ namespace MediaConverter.Core
 {
     public sealed class ConverterCore
     {
+        private readonly bool copyCodec;
+        private readonly bool checkCodec;
+        private readonly bool checkFooter;
         private readonly bool ignoreErrors;
         private readonly string targetCodec;
         private readonly string outputFormat;
@@ -26,7 +29,7 @@ namespace MediaConverter.Core
 
         #region Constants
 
-        private const string convertedHashesFolder = "MediaConverter";
+        private const string applicationName = nameof(MediaConverter);
         private const string convertedHashesFile = "media_converter_hashes.txt";
 
         #endregion
@@ -41,7 +44,7 @@ namespace MediaConverter.Core
 
         #endregion
 
-        public ConverterCore(string inputDirectory, string outputFormat, bool ignoreErrors)
+        public ConverterCore(string inputDirectory, string outputFormat, bool ignoreErrors, bool checkCodec, bool checkFooter, bool copyCodec)
         {
             if (string.IsNullOrWhiteSpace(inputDirectory))
             {
@@ -63,6 +66,9 @@ namespace MediaConverter.Core
             targetCodec = SetupTargetCodec();
             streamType = SetupStreamType();
             this.ignoreErrors = ignoreErrors;
+            this.checkCodec = checkCodec;
+            this.checkFooter = checkFooter;
+            this.copyCodec = copyCodec;
         }
 
         public void SetMarkBadAsCompleted(bool markBadAsCompleted)
@@ -96,6 +102,8 @@ namespace MediaConverter.Core
                     MediaTypes.Video.QuickTime => Xabe.FFmpeg.VideoCodec.h264.ToString(),
                     MediaTypes.Video.WindowsMedia => Xabe.FFmpeg.VideoCodec.wmv3.ToString(),
                     MediaTypes.Video.WebM => Xabe.FFmpeg.VideoCodec.vp9.ToString(),
+                    MediaTypes.Video.TransportStream => Xabe.FFmpeg.VideoCodec.h264.ToString(),
+                    MediaTypes.Video.ProgramStream => Xabe.FFmpeg.VideoCodec.mpeg2video.ToString(),
                     _ => throw new NotSupportedException("Output media type is not supported: " + outputFormat)
                 };
             }
@@ -135,7 +143,7 @@ namespace MediaConverter.Core
 
         public void ResetCache()
         {
-            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder);
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName);
             if (Directory.Exists(folder))
             {
                 Directory.Delete(folder, true);
@@ -167,7 +175,7 @@ namespace MediaConverter.Core
 
         private void DeleteTempFiles()
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder);
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName);
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
             if (!directoryInfo.Exists)
             {
@@ -180,14 +188,18 @@ namespace MediaConverter.Core
                 {
                     continue;
                 }
-                File.Delete(file.FullName);
+                try
+                {
+                    File.Delete(file.FullName);
+                }
+                catch (Exception) { }
             }
         }
 
         private void SetAsConvertedByMetadata(FileInfo file)
         {
-            string hash = SHA512(file.Name + file.Length + file.LastWriteTimeUtc);
-            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder);
+            string hash = SHA512(file.Name + file.Length);
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName);
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
@@ -200,21 +212,47 @@ namespace MediaConverter.Core
         {
             convertedHashes ??= InitializeConvertedHashes();
             string hash = SHA512(file.Name + file.Length + file.LastWriteTimeUtc);
-            return convertedHashes.Contains(hash);
+            string lightHash = SHA512(file.Name + file.Length);
+            return convertedHashes.Contains(hash) || convertedHashes.Contains(lightHash);
         }
 
         private bool IsConverted(FileInfo file)
         {
+            if (!file.Name.EndsWith(outputFormat))
+            {
+                return false;
+            }
             if (IsConvertedByMetadata(file))
             {
                 return true;
             }
+
+            if (checkFooter)
+            {
+                bool hasFfmpegFooter = FileHelpers.HasValidFooter(file, "Lavf58.45.100", applicationName);
+                if (hasFfmpegFooter)
+                {
+                    SetAsConvertedByMetadata(file);
+                    return true;
+                }
+            }
+
+            if (!checkCodec)
+            {
+                return false;
+            }
+
             try
             {
                 var mediaInfo = Xabe.FFmpeg.FFmpeg.GetMediaInfo(file.FullName).Result;
                 Xabe.FFmpeg.IStream codec = mediaInfo.Streams
                     .Where(x => x.StreamType == streamType)
                     .FirstOrDefault(x => x.Codec == targetCodec);
+
+                if (codec != null)
+                {
+                    SetAsConvertedByMetadata(file);
+                }
 
                 return codec != null;
             }
@@ -229,10 +267,10 @@ namespace MediaConverter.Core
             }
         }
 
-        private HashSet<string> InitializeConvertedHashes()
+        public HashSet<string> InitializeConvertedHashes()
         {
             HashSet<string> _convertedHashes = new HashSet<string>();
-            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), convertedHashesFolder);
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName);
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
@@ -312,12 +350,17 @@ namespace MediaConverter.Core
             Stopwatch sw = Stopwatch.StartNew();
             string counter = inputCache.Count > 0 ? $" ({processedCounter + 1}/{inputCache.Count})" : string.Empty;
             Log("File: {0}{1}", inputFile.Name, counter);
-            FileInfo temp = FileHelpers.GetTempFile(outputFormat, convertedHashesFolder);
+            FileInfo temp = FileHelpers.GetTempFile(outputFormat, applicationName);
             var snippet = await Xabe.FFmpeg.FFmpeg.Conversions.FromSnippet.Convert(inputFile.FullName, temp.FullName);
             snippet.OnProgress += Snippet_OnProgress;
+            snippet.AddParameter($"-metadata {applicationName}={true}");
             if (ignoreErrors)
             {
                 snippet.AddParameter("-err_detect ignore_err", Xabe.FFmpeg.ParameterPosition.PreInput);
+            }
+            if (copyCodec)
+            {
+                snippet.AddParameter("-c copy", Xabe.FFmpeg.ParameterPosition.PostInput);
             }
             Xabe.FFmpeg.IConversionResult result = await snippet.Start(token);
             if (token.IsCancellationRequested)
@@ -326,7 +369,8 @@ namespace MediaConverter.Core
             }
             FileHelpers.Move(temp, inputFile);
             long newSize = temp.Length;
-            OnItemProcessed(inputFile, sw.Elapsed, newSize);
+            long oldSize = inputFile.Length;
+            OnItemProcessed(temp, sw.Elapsed, newSize, oldSize);
         }
 
         private void CheckLibraries()
@@ -347,17 +391,17 @@ namespace MediaConverter.Core
         private void Log(Exception exception, string caption)
         {
             errorCounter++;
-            LogOutput?.Invoke(this, string.Format("[ERROR] {0} - {1} ({2})", DateTime.Now, caption, exception.Message));
+            LogOutput?.Invoke(this, string.Format("[ERROR] {0} - {1} ({2})", DateTime.Now.ToString("dd MMM HH:mm:ss"), caption, exception.Message));
         }
 
         private void Log(string message)
         {
-            LogOutput?.Invoke(this, string.Format("[INFO] {0} - {1}", DateTime.Now, message));
+            LogOutput?.Invoke(this, string.Format("[INFO] {0} - {1}", DateTime.Now.ToString("dd MMM HH:mm:ss"), message));
         }
 
         private void Log(string message, params object[] args)
         {
-            LogOutput?.Invoke(this, string.Format("[INFO] {0} - {1}", DateTime.Now, string.Format(message, args)));
+            LogOutput?.Invoke(this, string.Format("[INFO] {0} - {1}", DateTime.Now.ToString("dd MMM HH:mm:ss"), string.Format(message, args)));
         }
 
         #endregion
@@ -369,15 +413,15 @@ namespace MediaConverter.Core
             Log("Done. Processed {0} files. Compressed {1} MBytes. Errors: {2}. Elapsed: {3}", processedCounter, compressedBytes / 1024 / 1024, errorCounter, totalElapsed);
         }
 
-        private void OnItemProcessed(FileInfo inputFile, TimeSpan elapsed, long newSize)
+        private void OnItemProcessed(FileInfo inputFile, TimeSpan elapsed, long newSize, long oldSize)
         {
             processedCounter++;
-            long compressed = inputFile.Length - newSize;
+            long compressed = oldSize - newSize;
             compressedBytes += compressed;
             totalElapsed += elapsed;
-            long oldSizeMb = inputFile.Length / 1024 / 1024;
+            long oldSizeMb = oldSize / 1024 / 1024;
             long newSizeMb = newSize / 1024 / 1024;
-            int compressionRate = (int)(compressed * 100 / inputFile.Length);
+            int compressionRate = (int)(compressed * 100 / oldSize);
             Log("Compressed file: {0}, {1}Mb => {2}Mb ({3}%), elapsed: {4}", inputFile.Name, oldSizeMb, newSizeMb, compressionRate, elapsed);
             SetAsConvertedByMetadata(inputFile);
         }

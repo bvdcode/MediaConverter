@@ -13,12 +13,22 @@ namespace MediaConverter.Core
             public const string QuickTime = "mov";
             public const string WindowsMedia = "wmv";
             public const string WebM = "webm";
+            public const string TransportStream = "ts";
+            public const string ProgramStream = "mpg";
 
             public static IEnumerable<string> AsEnumerable()
             {
                 return new[]
-                {
-                    Mpeg4, Matroska, AudioVideoInterleave, FlashVideo, QuickTime, WindowsMedia, WebM
+                { 
+                    WebM,
+                    Mpeg4,
+                    Matroska,
+                    QuickTime,
+                    FlashVideo,
+                    WindowsMedia,
+                    ProgramStream,
+                    TransportStream,
+                    AudioVideoInterleave,
                 };
             }
         }

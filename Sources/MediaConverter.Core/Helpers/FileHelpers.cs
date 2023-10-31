@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MediaConverter.Core.Helpers
 {
@@ -19,14 +20,15 @@ namespace MediaConverter.Core.Helpers
             }
         }
 
-        public static bool HasValidFooter(FileInfo file, string encoderName)
+        public static bool HasValidFooter(FileInfo file, params string[] encoderNames)
         {
             using var fs = file.OpenRead();
-            fs.Seek(0 - encoderName.Length - byte.MaxValue, SeekOrigin.End);
-            byte[] footerBytes = new byte[encoderName.Length + byte.MaxValue];
+            int maxNameLength = encoderNames.Max(x => x.Length);
+            fs.Seek(0 - maxNameLength - byte.MaxValue, SeekOrigin.End);
+            byte[] footerBytes = new byte[maxNameLength + byte.MaxValue];
             fs.Read(footerBytes, 0, footerBytes.Length);
             string footer = Encoding.ASCII.GetString(footerBytes);
-            return footer.Contains(encoderName);
+            return encoderNames.Any(x => footer.Contains(x));
         }
 
         public static FileInfo GetTempFile(string outputFormat, string folder)
@@ -36,13 +38,13 @@ namespace MediaConverter.Core.Helpers
             return new FileInfo(path);
         }
 
-        public static void Move(FileInfo temp, FileInfo inputFile)
+        public static void Move(FileInfo from, FileInfo to)
         {
-            string newExtension = temp.Extension;
-            int index = inputFile.FullName.LastIndexOf(inputFile.Extension);
-            string newPath = inputFile.FullName[0..index] + newExtension;
-            File.Delete(inputFile.FullName);
-            temp.MoveTo(newPath);
+            string newExtension = from.Extension;
+            int index = to.FullName.LastIndexOf(to.Extension);
+            string newPath = to.FullName[0..index] + newExtension;
+            File.Delete(to.FullName);
+            from.MoveTo(newPath);
         }
     }
 }

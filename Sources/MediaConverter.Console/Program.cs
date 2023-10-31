@@ -18,7 +18,15 @@ namespace MediaConverter.ConsoleClient
             {
                 options.InputDirectory = Environment.CurrentDirectory;
             }
-            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat!, options.IgnoreErrors);
+            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat!, options.IgnoreErrors, options.CheckCodec, options.CheckFooter, options.CopyCodec);
+            if (options.Export)
+            {
+                var hashes = cc.InitializeConvertedHashes();
+                string filename = Path.Combine(Environment.CurrentDirectory, $"export_{Guid.NewGuid()}.txt");
+                await File.WriteAllLinesAsync(filename, hashes);
+                await Console.Out.WriteLineAsync("Exported: " + filename);
+                return;
+            }
             cc.SetMarkBadAsCompleted(options.MarkBadAsCompleted);
             if (options.ResetCache)
             {
