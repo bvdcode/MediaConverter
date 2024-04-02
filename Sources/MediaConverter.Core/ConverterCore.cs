@@ -391,7 +391,7 @@ namespace MediaConverter.Core
         private void Log(Exception exception, string caption)
         {
             errorCounter++;
-            LogOutput?.Invoke(this, string.Format("[ERROR] {0} - {1} ({2})", DateTime.Now.ToString("dd MMM HH:mm:ss"), caption, exception.Message));
+            LogOutput?.Invoke(this, string.Format("[ERROR] {0} - {1} ({2})", DateTime.Now.ToString("dd MMM HH:mm:ss"), caption, exception.ToString()));
         }
 
         private void Log(string message)
