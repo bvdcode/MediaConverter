@@ -1,6 +1,7 @@
-﻿using CommandLine;
+﻿using Serilog;
+using CommandLine;
+using Serilog.Core;
 using MediaConverter.Core;
-using Serilog;
 
 namespace MediaConverter.ConsoleClient
 {
@@ -19,7 +20,7 @@ namespace MediaConverter.ConsoleClient
             {
                 options.InputDirectory = Environment.CurrentDirectory;
             }
-            ILogger logger = new LoggerConfiguration()
+            Logger logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .CreateLogger();
             var cc = new ConverterCore(options.InputDirectory, options.OutputFormat, options.IgnoreErrors,
@@ -29,7 +30,7 @@ namespace MediaConverter.ConsoleClient
                 var hashes = cc.InitializeConvertedHashes();
                 string filename = Path.Combine(Environment.CurrentDirectory, $"export_{Guid.NewGuid()}.txt");
                 await File.WriteAllLinesAsync(filename, hashes);
-                await Console.Out.WriteLineAsync("Exported: " + filename);
+                logger.Information("Exported: {filename}", filename);
                 return;
             }
             cc.SetMarkBadAsCompleted(options.MarkBadAsCompleted);
