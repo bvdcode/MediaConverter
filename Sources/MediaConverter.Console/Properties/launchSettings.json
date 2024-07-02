@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "MediaConverter.ConsoleClient": {
-      "commandName": "Project",
-      "commandLineArgs": "-i \"E:\\Cloud\\OneDrive\\Lessons\\ITVDN\\Quality Assurance\\Основы тестирования\" -f mp4 --check-footer -m"
-    }
-  }
-}
