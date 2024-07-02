@@ -25,19 +25,19 @@ namespace MediaConverter.ConsoleClient
         [Option('l', "limit", Required = false, HelpText = "Limit files for converting.")]
         public int Limit { get; set; }
 
-        [Option('e', "ignore-errors", Required = false, HelpText = "Ignore errors in source stream.")]
+        [Option("ignore-errors", Required = false, HelpText = "Ignore errors in source stream.")]
         public bool IgnoreErrors { get; set; }
 
-        [Option('x', "check-codec", Required = false, HelpText = "Check existing codec of target file.")]
+        [Option("check-codec", Required = false, HelpText = "Check already converted existing codec of target file.")]
         public bool CheckCodec { get; set; }
 
-        [Option('p', "export", Required = false, HelpText = "Export saved hashes.")]
-        public bool Export { get; set; }
-
-        [Option('h', "check-footer", Required = false, HelpText = "Check codec footer.")]
+        [Option("check-footer", Required = false, HelpText = "Check already converted codec footer.")]
         public bool CheckFooter { get; set; }
 
-        [Option("copy-codec", Required = false, HelpText = "Add '-c copy' argument.")]
+        [Option("copy-codec", Required = false, HelpText = "Add 'ffmpeg -c copy' argument.")]
         public bool CopyCodec { get; set; }
+
+        [Option("export", Required = false, HelpText = "Export saved hashes.")]
+        public bool Export { get; set; }
     }
 }

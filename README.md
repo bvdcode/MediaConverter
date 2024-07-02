@@ -30,6 +30,16 @@ Usage:
 
   -l, --limit                    - Limit files for converting.
 
+  --ignore-errors                - Ignore errors in source stream.
+
+  --check-codec                  - Check already converted existing codec of target file.
+
+  --check-footer                 - Check already converted codec footer.
+
+  --copy-codec                   - Add 'ffmpeg -c copy' argument.
+
+  --export                       - Export saved hashes.
+
   --help                         - Display this help screen.
 
   --version                      - Display version information.
@@ -37,3 +47,13 @@ Usage:
 Example:
   
     MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and convert 10 files to mp4.
+
+
+        [Option("export", Required = false, HelpText = "Export saved hashes.")]
+        public bool Export { get; set; }
+
+        [Option("check-footer", Required = false, HelpText = "Check codec footer.")]
+        public bool CheckFooter { get; set; }
+
+        [Option("copy-codec", Required = false, HelpText = "Add '-c copy' argument.")]
+        public bool CopyCodec { get; set; }
