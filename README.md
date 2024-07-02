@@ -2,7 +2,7 @@
 
 FFMpeg wrapper for batch-converting of media files.
 Converted files will be hashed by metadata and will not be converted in next run. Use -r for flush hash-cache.
-Place FFMPEG to executable folder or to any system $PATH folder.
+Place FFMPEG to executable folder or to any system $PATH folder, otherwise the fresh library will be downloaded.
 
 Supported formats:
 
