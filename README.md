@@ -47,13 +47,3 @@ Usage:
 Example:
   
     MediaConverter.ConsoleClient.exe -l 10 -f mp4 - search all supported video files and convert 10 files to mp4.
-
-
-        [Option("export", Required = false, HelpText = "Export saved hashes.")]
-        public bool Export { get; set; }
-
-        [Option("check-footer", Required = false, HelpText = "Check codec footer.")]
-        public bool CheckFooter { get; set; }
-
-        [Option("copy-codec", Required = false, HelpText = "Add '-c copy' argument.")]
-        public bool CopyCodec { get; set; }
