@@ -391,7 +391,8 @@ namespace MediaConverter.Core
             bool ffprobeExists = File.Exists("ffprobe.exe");
             if (!ffmpegExists || !ffprobeExists)
             {
-                FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official);
+                FfmpegDownloadProgress progress = new FfmpegDownloadProgress(_logger);
+                FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, progress).Wait();
             }
             FFmpeg.SetExecutablesPath(Environment.CurrentDirectory);
         }
