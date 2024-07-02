@@ -11,7 +11,7 @@ namespace MediaConverter.ConsoleClient
         public string? InputDirectory { get; set; }
 
         [Option('f', "format", Required = true, HelpText = "Output format. Input files will be found by this type (Audio or Video).")]
-        public string? OutputFormat { get; set; }
+        public string OutputFormat { get; set; } = string.Empty;
 
         [Option('r', "reset", Required = false, HelpText = "Flush compressed file hashes from cache.")]
         public bool ResetCache { get; set; }

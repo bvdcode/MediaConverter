@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using MediaConverter.Core;
+using Serilog;
 
 namespace MediaConverter.ConsoleClient
 {
@@ -18,7 +19,11 @@ namespace MediaConverter.ConsoleClient
             {
                 options.InputDirectory = Environment.CurrentDirectory;
             }
-            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat!, options.IgnoreErrors, options.CheckCodec, options.CheckFooter, options.CopyCodec);
+            ILogger logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat, options.IgnoreErrors,
+                options.CheckCodec, options.CheckFooter, options.CopyCodec, logger);
             if (options.Export)
             {
                 var hashes = cc.InitializeConvertedHashes();
