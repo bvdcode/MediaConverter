@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace MediaConverter.Core.Helpers
 {
@@ -43,7 +44,21 @@ namespace MediaConverter.Core.Helpers
             string newExtension = from.Extension;
             int index = to.FullName.LastIndexOf(to.Extension);
             string newPath = to.FullName[0..index] + newExtension;
-            File.Delete(to.FullName);
+            Thread.Sleep(1000);
+            if (!to.Exists)
+            {
+                from.MoveTo(newPath);
+                return;
+            }
+            try
+            {
+                to.Delete();
+            }
+            catch (Exception)
+            {
+                Thread.Sleep(5_000);
+                to.Delete();
+            }
             from.MoveTo(newPath);
         }
     }
