@@ -16,9 +16,6 @@ namespace MediaConverter.ConsoleClient
         [Option('r', "reset", Required = false, HelpText = "Flush compressed file hashes from cache.")]
         public bool ResetCache { get; set; }
 
-        [Option("reconvert", Required = false, HelpText = "Reset completed files status in current directory.")]
-        public bool Reconvert { get; set; }
-
         [Option('m', "mark-bad-as-completed", Required = false, HelpText = "Mark bad files or non-convertable files as completed.")]
         public bool MarkBadAsCompleted { get; set; }
 
@@ -39,6 +36,9 @@ namespace MediaConverter.ConsoleClient
 
         [Option("copy-codec", Required = false, HelpText = "Add 'ffmpeg -c copy' argument.")]
         public bool CopyCodec { get; set; }
+
+        [Option("reconvert", Required = false, HelpText = "Reset completed files status in current directory.")]
+        public bool Reconvert { get; set; }
 
         [Option("export", Required = false, HelpText = "Export saved hashes.")]
         public bool Export { get; set; }
