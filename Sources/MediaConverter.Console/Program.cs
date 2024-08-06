@@ -9,7 +9,6 @@ namespace MediaConverter.ConsoleClient
     {
         public static async Task Main(params string[] args)
         {
-            args = [ "-f", "mp4" ];
             await Parser.Default
                 .ParseArguments<Options>(args)
                 .WithParsedAsync(StartApplicationAsync);
