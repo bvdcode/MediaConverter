@@ -224,9 +224,8 @@ namespace MediaConverter.Core
         private bool IsConvertedByMetadata(FileInfo file)
         {
             _convertedHashes ??= InitializeConvertedHashes();
-            string hash = SHA512(file.Name + file.Length + file.LastWriteTimeUtc);
-            string lightHash = SHA512(file.Name + file.Length);
-            return _convertedHashes.Contains(hash) || _convertedHashes.Contains(lightHash);
+            string hash = SHA512(file.Name + file.Length);
+            return _convertedHashes.Contains(hash);
         }
 
         private bool IsConverted(FileInfo file)
@@ -242,7 +241,7 @@ namespace MediaConverter.Core
 
             if (_checkFooter)
             {
-                bool hasFfmpegFooter = FileHelpers.HasValidFooter(file, "Lavf58.45.100", applicationName);
+                bool hasFfmpegFooter = FileHelpers.HasValidFooter(file, "Lavf60.16.100", applicationName);
                 if (hasFfmpegFooter)
                 {
                     SetAsConvertedByMetadata(file);
