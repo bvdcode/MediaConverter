@@ -431,6 +431,25 @@ namespace MediaConverter.Core
             _logger.Information("Progress: {0}% ({1} - {2}) PID: {3}", args.Percent, args.Duration, args.TotalLength, args.ProcessId);
         }
 
+        public void ResetCompletedFiles()
+        {
+            var files = _inputDirectory.GetFiles();
+            _convertedHashes ??= InitializeConvertedHashes();
+            foreach (var file in files)
+            {
+                string hash = SHA512(file.Name + file.Length);
+                if (_convertedHashes.Contains(hash))
+                {
+                    _convertedHashes.Remove(hash);
+                }
+            }
+            // save new hashes
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName);
+            string filePath = Path.Combine(folder, convertedHashesFile);
+            File.WriteAllLines(filePath, _convertedHashes);
+            _logger.Information("File statuses in directory were reset.");
+        }
+
         #endregion
     }
 }

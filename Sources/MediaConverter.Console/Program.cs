@@ -34,6 +34,10 @@ namespace MediaConverter.ConsoleClient
                 return;
             }
             cc.SetMarkBadAsCompleted(options.MarkBadAsCompleted);
+            if (options.Reconvert)
+            {
+                cc.ResetCompletedFiles();
+            }
             if (options.ResetCache)
             {
                 cc.ResetCache();
