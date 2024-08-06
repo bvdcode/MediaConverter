@@ -428,7 +428,8 @@ namespace MediaConverter.Core
                 return;
             }
             progressCounter = args.Percent;
-            _logger.Information("Progress: {0}% ({1} - {2}) PID: {3}", args.Percent, args.Duration, args.TotalLength, args.ProcessId);
+            string percentText = args.Percent.ToString() + '%';
+            _logger.Information("Progress: {0} ({1} - {2}) PID: {3}", percentText, args.Duration, args.TotalLength, args.ProcessId);
         }
 
         public void ResetCompletedFiles()
