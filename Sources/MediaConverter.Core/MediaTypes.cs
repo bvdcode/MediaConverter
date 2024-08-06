@@ -15,6 +15,10 @@ namespace MediaConverter.Core
             public const string WebM = "webm";
             public const string TransportStream = "ts";
             public const string ProgramStream = "mpg";
+            public const string Mpeg2TransportStream = "m2ts";
+            public const string Mpeg2TransportStream1 = "mts";
+            public const string Mpeg2TransportStream2 = "m2t";
+            public const string Mpeg2ProgramStream = "vob";
 
             public static IEnumerable<string> AsEnumerable()
             {
@@ -29,6 +33,9 @@ namespace MediaConverter.Core
                     ProgramStream,
                     TransportStream,
                     AudioVideoInterleave,
+                    Mpeg2TransportStream,
+                    Mpeg2TransportStream1,
+                    Mpeg2TransportStream2,
                 };
             }
         }

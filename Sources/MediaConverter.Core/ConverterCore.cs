@@ -114,6 +114,9 @@ namespace MediaConverter.Core
                     MediaTypes.Video.WebM => VideoCodec.vp9.ToString(),
                     MediaTypes.Video.TransportStream => VideoCodec.h264.ToString(),
                     MediaTypes.Video.ProgramStream => VideoCodec.mpeg2video.ToString(),
+                    MediaTypes.Video.Mpeg2TransportStream => VideoCodec.mpeg2video.ToString(),
+                    MediaTypes.Video.Mpeg2TransportStream1 => VideoCodec.mpeg2video.ToString(),
+                    MediaTypes.Video.Mpeg2TransportStream2 => VideoCodec.mpeg2video.ToString(),
                     _ => throw new NotSupportedException("Output media type is not supported: " + _outputFormat)
                 };
             }
