@@ -433,6 +433,7 @@ namespace MediaConverter.Core
 
         public void ResetCompletedFiles()
         {
+            int counter = 0;
             var files = _inputDirectory.GetFiles();
             _convertedHashes ??= InitializeConvertedHashes();
             foreach (var file in files)
@@ -441,13 +442,13 @@ namespace MediaConverter.Core
                 if (_convertedHashes.Contains(hash))
                 {
                     _convertedHashes.Remove(hash);
+                    counter++;
                 }
             }
-            // save new hashes
             string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName);
             string filePath = Path.Combine(folder, convertedHashesFile);
             File.WriteAllLines(filePath, _convertedHashes);
-            _logger.Information("File statuses in directory were reset.");
+            _logger.Information("File statuses in directory were reset for {0} files", counter);
         }
 
         #endregion
