@@ -38,7 +38,6 @@ namespace MediaConverter.ConsoleClient
             {
                 cc.ResetCache();
             }
-            cc.LogOutput += (sender, e) => Console.WriteLine(e);
             if (options.CalculateCount || options.ScanOnly)
             {
                 await cc.FindInputFilesAsync();

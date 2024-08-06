@@ -26,7 +26,6 @@ namespace MediaConverter.Core
         private bool _markBadAsCompleted = false;
         private HashSet<string>? _convertedHashes;
         private readonly List<FileInfo> _inputCache;
-        public event EventHandler<string>? LogOutput;
         private readonly DirectoryInfo _inputDirectory;
         private TimeSpan _totalElapsed = TimeSpan.Zero;
         private readonly IEnumerable<string> _inputFormats;
@@ -67,8 +66,8 @@ namespace MediaConverter.Core
             {
                 throw new DirectoryNotFoundException(inputDirectory);
             }
-            CheckLibraries();
             _logger = logger;
+            CheckLibraries();
             _outputFormat = outputFormat.Replace(".", string.Empty).Trim();
             _inputCache = new List<FileInfo>();
             _inputFormats = DetectInputFormats();
