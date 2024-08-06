@@ -388,7 +388,12 @@ namespace MediaConverter.Core
 
         private void CheckLibraries()
         {
-            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName);
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName, 
+                "ffmpeg-libraries");
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
             FFmpeg.SetExecutablesPath(folder);
             string ffmpegPath = Path.Combine(folder, "ffmpeg");
             string ffprobePath = Path.Combine(folder, "ffprobe");
@@ -397,9 +402,9 @@ namespace MediaConverter.Core
             if (!ffmpegExists || !ffprobeExists)
             {
                 FfmpegDownloadProgress progress = new FfmpegDownloadProgress(_logger);
-                FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, progress).Wait();
+                FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, folder, progress).Wait();
             }
-            _logger.Information("FFmpeg path: {0}", ffmpegPath);
+            _logger.Information("FFmpeg path: {0}", folder);
         }
 
         #endregion

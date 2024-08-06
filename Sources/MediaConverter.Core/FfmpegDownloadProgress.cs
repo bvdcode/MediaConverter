@@ -16,8 +16,12 @@ namespace MediaConverter.Core
 
         public void Report(ProgressInfo value)
         {
-            int progress = (int)(value.DownloadedBytes / value.TotalBytes);
-            if (progress != latestProgress)
+            if (latestProgress == 100)
+            {
+                return;
+            }
+            int progress = (int)(100 * value.DownloadedBytes / value.TotalBytes);
+            if (progress > latestProgress)
             {
                 _logger.Information("Downloading ffmpeg: {0}%", progress);
                 latestProgress = progress;
