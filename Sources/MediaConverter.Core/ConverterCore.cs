@@ -417,7 +417,8 @@ namespace MediaConverter.Core
             long oldSizeMb = oldSize / 1024 / 1024;
             long newSizeMb = newSize / 1024 / 1024;
             int compressionRate = (int)(compressed * 100 / oldSize);
-            _logger.Information("Compressed file: {0}, {1}Mb => {2}Mb ({3}%), elapsed: {4}", inputFile.Name, oldSizeMb, newSizeMb, compressionRate, elapsed);
+            _logger.Information("Compressed file: {0}, {1} => {2} ({3}%), elapsed: {4}", 
+                inputFile.Name, oldSizeMb + "Mb", newSizeMb + "Mb", compressionRate, elapsed);
             SetAsConvertedByMetadata(inputFile);
         }
 
@@ -428,7 +429,7 @@ namespace MediaConverter.Core
                 return;
             }
             progressCounter = args.Percent;
-            string percentText = args.Percent.ToString() + '%';
+            string percentText = (args.Percent.ToString() + '%').PadLeft(4, ' ');
             _logger.Information("Progress: {0} ({1} - {2}) PID: {3}", percentText, args.Duration, args.TotalLength, args.ProcessId);
         }
 
