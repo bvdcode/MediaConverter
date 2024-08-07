@@ -31,9 +31,6 @@ namespace MediaConverter.ConsoleClient
         [Option("check-codec", Required = false, HelpText = "Check already converted existing codec of target file.")]
         public bool CheckCodec { get; set; }
 
-        [Option("check-footer", Required = false, HelpText = "Check already converted codec footer.", Default = true)]
-        public bool CheckFooter { get; set; }
-
         [Option("copy-codec", Required = false, HelpText = "Add 'ffmpeg -c copy' argument.")]
         public bool CopyCodec { get; set; }
 

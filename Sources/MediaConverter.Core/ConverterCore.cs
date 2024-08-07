@@ -18,7 +18,6 @@ namespace MediaConverter.Core
         private readonly ILogger _logger;
         private readonly bool _copyCodec;
         private readonly bool _checkCodec;
-        private readonly bool _checkFooter;
         private readonly bool _ignoreErrors;
         private readonly string _targetCodec;
         private readonly string _outputFormat;
@@ -48,8 +47,7 @@ namespace MediaConverter.Core
         #endregion
 
         public ConverterCore(string inputDirectory, string outputFormat,
-            bool ignoreErrors, bool checkCodec, bool checkFooter,
-            bool copyCodec, ILogger logger)
+            bool ignoreErrors, bool checkCodec, bool copyCodec, ILogger logger)
         {
             if (string.IsNullOrWhiteSpace(inputDirectory))
             {
@@ -75,7 +73,6 @@ namespace MediaConverter.Core
             _streamType = SetupStreamType();
             _ignoreErrors = ignoreErrors;
             _checkCodec = checkCodec;
-            _checkFooter = checkFooter;
             _copyCodec = copyCodec;
         }
 
@@ -239,14 +236,11 @@ namespace MediaConverter.Core
                 return true;
             }
 
-            if (_checkFooter)
+            bool hasFfmpegFooter = FileHelpers.HasValidFooter(file, checkEncoder: _checkCodec);
+            if (hasFfmpegFooter)
             {
-                bool hasFfmpegFooter = FileHelpers.HasValidFooter(file);
-                if (hasFfmpegFooter)
-                {
-                    SetAsConvertedByMetadata(file);
-                    return true;
-                }
+                SetAsConvertedByMetadata(file);
+                return true;
             }
 
             if (!_checkCodec)

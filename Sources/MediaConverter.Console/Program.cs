@@ -24,7 +24,7 @@ namespace MediaConverter.ConsoleClient
                 .WriteTo.Console()
                 .CreateLogger();
             var cc = new ConverterCore(options.InputDirectory, options.OutputFormat, options.IgnoreErrors,
-                options.CheckCodec, options.CheckFooter, options.CopyCodec, logger);
+                options.CheckCodec, options.CopyCodec, logger);
             if (options.Export)
             {
                 var hashes = cc.InitializeConvertedHashes();

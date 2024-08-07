@@ -22,7 +22,7 @@ namespace MediaConverter.Core.Helpers
             }
         }
 
-        public static bool HasValidFooter(FileInfo file)
+        public static bool HasValidFooter(FileInfo file, bool checkEncoder = false)
         {
             // , "Lavf60.16.100", applicationName
             string applicationName = nameof(MediaConverter);
@@ -34,9 +34,9 @@ namespace MediaConverter.Core.Helpers
             fs.Read(footerBytes, 0, footerBytes.Length);
             string footer = Encoding.ASCII.GetString(footerBytes);
             // Lavf[2 or 3 digits].[2 or 3 digits].[2 or 3 digits]
-            string pattern = @"Lavf\d{2,3}\.\d{2,3}\.\d{2,3}";
-            bool hasFooter = Regex.IsMatch(footer, pattern);
-            return hasFooter || footer.Contains(applicationName);
+            const string pattern = @"Lavf\d{2,3}\.\d{2,3}\.\d{2,3}";
+            bool hasEncoderFooter = checkEncoder && Regex.IsMatch(footer, pattern);
+            return hasEncoderFooter || footer.Contains(applicationName);
         }
 
         public static FileInfo GetTempFile(string outputFormat, string folder)
