@@ -241,7 +241,7 @@ namespace MediaConverter.Core
 
             if (_checkFooter)
             {
-                bool hasFfmpegFooter = FileHelpers.HasValidFooter(file, "Lavf60.16.100", applicationName);
+                bool hasFfmpegFooter = FileHelpers.HasValidFooter(file);
                 if (hasFfmpegFooter)
                 {
                     SetAsConvertedByMetadata(file);

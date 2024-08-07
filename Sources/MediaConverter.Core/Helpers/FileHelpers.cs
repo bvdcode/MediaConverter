@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace MediaConverter.Core.Helpers
 {
@@ -21,15 +22,21 @@ namespace MediaConverter.Core.Helpers
             }
         }
 
-        public static bool HasValidFooter(FileInfo file, params string[] encoderNames)
+        public static bool HasValidFooter(FileInfo file)
         {
+            // , "Lavf60.16.100", applicationName
+            string applicationName = nameof(MediaConverter);
             using var fs = file.OpenRead();
-            int maxNameLength = encoderNames.Max(x => x.Length);
-            fs.Seek(0 - maxNameLength - byte.MaxValue, SeekOrigin.End);
-            byte[] footerBytes = new byte[maxNameLength + byte.MaxValue];
+            int nameLength = applicationName.Length;
+            int add = ushort.MaxValue;
+            fs.Seek(0 - nameLength - add, SeekOrigin.End);
+            byte[] footerBytes = new byte[nameLength + add];
             fs.Read(footerBytes, 0, footerBytes.Length);
             string footer = Encoding.ASCII.GetString(footerBytes);
-            return encoderNames.Any(x => footer.Contains(x));
+            // Lavf[2 or 3 digits].[2 or 3 digits].[2 or 3 digits]
+            string pattern = @"Lavf\d{2,3}\.\d{2,3}\.\d{2,3}";
+            bool hasFooter = Regex.IsMatch(footer, pattern);
+            return hasFooter || footer.Contains(applicationName);
         }
 
         public static FileInfo GetTempFile(string outputFormat, string folder)
