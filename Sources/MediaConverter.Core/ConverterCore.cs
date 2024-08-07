@@ -366,7 +366,7 @@ namespace MediaConverter.Core
             FileInfo temp = FileHelpers.GetTempFile(_outputFormat, applicationName);
             var snippet = await FFmpeg.Conversions.FromSnippet.Convert(inputFile.FullName, temp.FullName);
             snippet.OnProgress += Snippet_OnProgress;
-            snippet.AddParameter($"-metadata {applicationName}={true}");
+            snippet.AddParameter($"-metadata comment={applicationName}");
             if (_ignoreErrors)
             {
                 snippet.AddParameter("-err_detect ignore_err", ParameterPosition.PreInput);
