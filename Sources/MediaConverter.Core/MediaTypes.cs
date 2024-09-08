@@ -19,6 +19,7 @@ namespace MediaConverter.Core
             public const string Mpeg2TransportStream1 = "mts";
             public const string Mpeg2TransportStream2 = "m2t";
             public const string Mpeg2ProgramStream = "vob";
+            public const string ThirdGenerationPartnershipProject = "3gp";
 
             public static IEnumerable<string> AsEnumerable()
             {
@@ -36,6 +37,8 @@ namespace MediaConverter.Core
                     Mpeg2TransportStream,
                     Mpeg2TransportStream1,
                     Mpeg2TransportStream2,
+                    Mpeg2ProgramStream,
+                    ThirdGenerationPartnershipProject
                 };
             }
         }
