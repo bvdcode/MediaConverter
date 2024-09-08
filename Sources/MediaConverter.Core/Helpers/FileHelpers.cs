@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Microsoft.VisualBasic;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using static System.Net.WebRequestMethods;
+using static MediaConverter.Core.WinApi;
 
 namespace MediaConverter.Core.Helpers
 {
@@ -59,12 +62,19 @@ namespace MediaConverter.Core.Helpers
             }
             try
             {
-                to.Delete();
+                to.ToRecycleBin();
             }
             catch (Exception)
             {
                 Thread.Sleep(5_000);
-                to.Delete();
+                try
+                {
+                    to.Delete();
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Can't delete file: " + to.FullName);
+                }
             }
             from.MoveTo(newPath);
         }
