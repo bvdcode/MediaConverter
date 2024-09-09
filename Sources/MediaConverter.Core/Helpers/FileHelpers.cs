@@ -1,13 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Linq;
 using System.Threading;
-using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using static System.Net.WebRequestMethods;
-using static MediaConverter.Core.WinApi;
 
 namespace MediaConverter.Core.Helpers
 {

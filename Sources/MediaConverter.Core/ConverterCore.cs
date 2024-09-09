@@ -15,6 +15,7 @@ namespace MediaConverter.Core
 {
     public sealed class ConverterCore
     {
+        private readonly int _threads;
         private readonly ILogger _logger;
         private readonly bool _copyCodec;
         private readonly bool _checkCodec;
@@ -47,9 +48,14 @@ namespace MediaConverter.Core
 
         #endregion
 
-        public ConverterCore(string inputDirectory, string outputFormat,
+        public ConverterCore(string inputDirectory, string outputFormat, int threads,
             bool ignoreErrors, bool checkCodec, bool checkFooterCodec, bool copyCodec, ILogger logger)
         {
+            _threads = threads;
+            if (_threads < 1)
+            {
+                _threads = 1;
+            }
             if (string.IsNullOrWhiteSpace(inputDirectory))
             {
                 throw new ArgumentException($"'{nameof(inputDirectory)}' cannot be null or whitespace.",
@@ -373,6 +379,8 @@ namespace MediaConverter.Core
             {
                 snippet.AddParameter("-c copy", ParameterPosition.PostInput);
             }
+            snippet.UseMultiThread(_threads);
+            _logger.Information("Using {0} threads", _threads);
             IConversionResult result = await snippet.Start(token);
             if (token.IsCancellationRequested)
             {

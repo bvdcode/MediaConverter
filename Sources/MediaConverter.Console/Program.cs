@@ -23,7 +23,12 @@ namespace MediaConverter.ConsoleClient
             Logger logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .CreateLogger();
-            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat, options.IgnoreErrors,
+            int threads = options.Threads ?? Environment.ProcessorCount;
+            if (threads < 1)
+            {
+                threads = 1;
+            }
+            var cc = new ConverterCore(options.InputDirectory, options.OutputFormat, threads, options.IgnoreErrors,
                 options.CheckCodec, options.CheckFooterCodec, options.CopyCodec, logger);
             if (options.Export)
             {

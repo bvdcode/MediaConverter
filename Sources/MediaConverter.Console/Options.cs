@@ -25,6 +25,9 @@ namespace MediaConverter.ConsoleClient
         [Option('l', "limit", Required = false, HelpText = "Limit files for converting.")]
         public int Limit { get; set; }
 
+        [Option('t', "threads", Required = false, HelpText = "Threads count.")]
+        public int? Threads { get; set; }
+
         [Option("ignore-errors", Required = false, HelpText = "Ignore errors in source stream.")]
         public bool IgnoreErrors { get; set; }
 
