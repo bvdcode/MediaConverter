@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using EasyExtensions.Windows;
+using EasyExtensions.Windows.Extensions;
 
 namespace MediaConverter.Core.Helpers
 {
