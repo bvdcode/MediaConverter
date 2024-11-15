@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using EasyExtensions.Windows;
 
 namespace MediaConverter.Core.Helpers
 {
@@ -58,7 +59,7 @@ namespace MediaConverter.Core.Helpers
             }
             try
             {
-                to.ToRecycleBin();
+                to.MoveToRecycleBin();
             }
             catch (Exception)
             {
