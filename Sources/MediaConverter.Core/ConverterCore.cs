@@ -16,6 +16,7 @@ namespace MediaConverter.Core
     public sealed class ConverterCore
     {
         private readonly int _threads;
+        private readonly bool _validate;
         private readonly ILogger _logger;
         private readonly bool _copyCodec;
         private readonly bool _checkCodec;
@@ -48,9 +49,10 @@ namespace MediaConverter.Core
 
         #endregion
 
-        public ConverterCore(string inputDirectory, string outputFormat, int threads,
-            bool ignoreErrors, bool checkCodec, bool checkFooterCodec, bool copyCodec, ILogger logger)
+        public ConverterCore(string inputDirectory, string outputFormat, int threads, bool ignoreErrors,
+            bool checkCodec, bool checkFooterCodec, bool copyCodec, ILogger logger, bool onlyValidate)
         {
+            _validate = onlyValidate;
             _threads = threads;
             if (_threads < 1)
             {
@@ -367,6 +369,11 @@ namespace MediaConverter.Core
             Stopwatch sw = Stopwatch.StartNew();
             string counter = _inputCache.Count > 0 ? $" ({processedCounter + 1}/{_inputCache.Count})" : string.Empty;
             _logger.Information("Processing file: {0}{1}", inputFile.Name, counter);
+            if (_validate)
+            {
+                await ValidateAsync(inputFile, token);
+                return;
+            }
             FileInfo temp = FileHelpers.GetTempFile(_outputFormat, applicationName);
             var snippet = await FFmpeg.Conversions.FromSnippet.Convert(inputFile.FullName, temp.FullName);
             snippet.OnProgress += Snippet_OnProgress;
@@ -394,7 +401,7 @@ namespace MediaConverter.Core
 
         private void CheckLibraries()
         {
-            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName, 
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), applicationName,
                 "ffmpeg-libraries");
             if (!Directory.Exists(folder))
             {
@@ -411,6 +418,20 @@ namespace MediaConverter.Core
                 FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, folder, progress).Wait();
             }
             _logger.Information("FFmpeg path: {0}", folder);
+        }
+
+        private async Task ValidateAsync(FileInfo inputFile, CancellationToken token)
+        {
+            try
+            {
+                var mediaInfo = await FFmpeg.GetMediaInfo(inputFile.FullName, token);
+                _logger.Information("File: {0}, duration: {1}, streams: {2}", inputFile.Name, mediaInfo.Duration, mediaInfo.Streams.Count());
+            }
+            catch (Exception ex)
+            {
+                errorCounter++;
+                _logger.Error(ex, "Error when validating file: {0}", inputFile.Name);
+            }
         }
 
         #endregion
@@ -432,7 +453,7 @@ namespace MediaConverter.Core
             long oldSizeMb = oldSize / 1024 / 1024;
             long newSizeMb = newSize / 1024 / 1024;
             int compressionRate = (int)(compressed * 100 / oldSize);
-            _logger.Information("Compressed file: {0}, {1} => {2} {3}, elapsed: {4}", 
+            _logger.Information("Compressed file: {0}, {1} => {2} {3}, elapsed: {4}",
                 inputFile.Name, oldSizeMb + "Mb", newSizeMb + "Mb", $"({compressionRate}%)", elapsed);
             SetAsConvertedByMetadata(inputFile);
         }

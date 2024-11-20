@@ -29,7 +29,7 @@ namespace MediaConverter.ConsoleClient
                 threads = 1;
             }
             var cc = new ConverterCore(options.InputDirectory, options.OutputFormat, threads, options.IgnoreErrors,
-                options.CheckCodec, options.CheckFooterCodec, options.CopyCodec, logger);
+                options.CheckCodec, options.CheckFooterCodec, options.CopyCodec, logger, options.Validate);
             if (options.Export)
             {
                 var hashes = cc.InitializeConvertedHashes();

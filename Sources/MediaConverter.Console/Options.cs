@@ -28,6 +28,9 @@ namespace MediaConverter.ConsoleClient
         [Option('t', "threads", Required = false, HelpText = "Threads count.")]
         public int? Threads { get; set; }
 
+        [Option('v', "validate", Required = false, HelpText = "Validate files withouth converting.")]
+        public bool Validate { get; set; }
+
         [Option("ignore-errors", Required = false, HelpText = "Ignore errors in source stream.")]
         public bool IgnoreErrors { get; set; }
 
