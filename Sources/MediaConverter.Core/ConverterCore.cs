@@ -239,6 +239,10 @@ namespace MediaConverter.Core
 
         private bool IsConverted(FileInfo file)
         {
+            if (_validate)
+            {
+                return false;
+            }
             if (!file.Name.EndsWith(_outputFormat))
             {
                 return false;
@@ -420,17 +424,23 @@ namespace MediaConverter.Core
             _logger.Information("FFmpeg path: {0}", folder);
         }
 
-        private async Task ValidateAsync(FileInfo inputFile, CancellationToken token)
+        private async Task<bool> ValidateAsync(FileInfo inputFile, CancellationToken token)
         {
             try
             {
                 var mediaInfo = await FFmpeg.GetMediaInfo(inputFile.FullName, token);
                 _logger.Information("File: {0}, duration: {1}, streams: {2}", inputFile.Name, mediaInfo.Duration, mediaInfo.Streams.Count());
+                return true;
             }
             catch (Exception ex)
             {
                 errorCounter++;
                 _logger.Error(ex, "Error when validating file: {0}", inputFile.Name);
+                return false;
+            }
+            finally
+            {
+                processedCounter++;
             }
         }
 
